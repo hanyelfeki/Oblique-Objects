@@ -14,7 +14,7 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 
 	for (i=0; i<nObjects; i++)
 	{
-	u_axis[i]=new double[3];v_axis[i]=new double[3];w_axis[i]=new double[3]; 
+	u_axis[i]=new double[3];v_axis[i]=new double[3];w_axis[i]=new double[3];
 	xyz0Corner[i]=new double[3];xyz7Corner[i]=new double[3];
 	}
 // Allocate the 3D dynamic Array "source_range"
@@ -38,17 +38,17 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 			}
 		}
 	}
-	
-	for (i=0; i<nObjects; i++)  
+
+	for (i=0; i<nObjects; i++)
 	{
 		for (j=0;j<3;j++)
 		{
 		u_axis[i][j]=0.0;v_axis[i][j]=0.0;w_axis[i][j]=0.0;
-		xyz0Corner[i][j]=0.0;xyz7Corner[i][j]=0.0; 
+		xyz0Corner[i][j]=0.0;xyz7Corner[i][j]=0.0;
 		}
 	}
 
-	for (i=0; i<nObjects; i++)  
+	for (i=0; i<nObjects; i++)
 	{
 		source_dir[i]=0;lu[i]=0.0;lv[i]=0.0;lw[i]=0.0;
 	}
@@ -67,7 +67,7 @@ void ObliqueObjects::destructObliqueObjects(int nObjects)
 
 		for (i=0; i<nObjects; i++)
 	{
-		
+
 		for(j=0;j<3;j++)
 		{
 			delete[] source_range[i][j];
@@ -80,9 +80,9 @@ void ObliqueObjects::destructObliqueObjects(int nObjects)
 void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double luu,double lvv,double lww,int i_dir,double a1_axis_Esource[3],double a2_axis_Esource[3],double a3_axis_Esource[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
 {
 	// In this function the solver use the information that were passed from GUI about objects
-	// As a special case we have a source or load can be between 2 points, 2 parallel wires, or 2 parallel plates. 
+	// As a special case we have a source or load can be between 2 points, 2 parallel wires, or 2 parallel plates.
 	// W-direction is the direction of the source
-	// This function will calaculate finally in the Caretizian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax  
+	// This function will calaculate finally in the Caretizian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax
 	// to be used in the Cartezian grid for the solver
 	int i;
 	double xyz1Corner[3], xyz2Corner[3], xyz3Corner[3], xyz4Corner[3], xyz5Corner[3], xyz6Corner[3];
@@ -145,7 +145,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
       v=(x-x0)*v_axis[nn][0] +(y-y0) * v_axis[nn][1] +(z-z0) * v_axis[nn][2];
       w=(x-x0)*w_axis[nn][0] +(y-y0) * w_axis[nn][1] +(z-z0) * w_axis[nn][2];
 //
-      if(( u >=0. && u<=u_length) &&( v>=0. && v<=v_length) &&( w>=0. && w<=w_length)) 
+      if(( u >=0. && u<=u_length) &&( v>=0. && v<=v_length) &&( w>=0. && w<=w_length))
 		  isit_in= true;
    }
 
@@ -213,7 +213,7 @@ void Source::destruct_Source(int nObjects)
 		}
 	}
 
-			// 
+			//
 	  double sValue(int nTime,double t0)
 	  {
 //      Note that I wrote very simplistic function here just as an example. In the real software there is a source table for different functions
@@ -222,14 +222,14 @@ void Source::destruct_Source(int nObjects)
 		double c=3.e8;
 		double betadt=64.*dt;
 		double t=nTime*dt;
-		double tau=t-t0; 
+		double tau=t-t0;
 		return exp(-pow((tau-betadt),2));
  }
 
 	   void FSignal(int nTime)
 	   {
 		   // This subroutine is used for E-field sources and voltage lumped sources
-		    
+
 		   int nn,i,j,k,indexSource;
 		   double ssndc,delay_;
 		   double xi,yj,zk;
@@ -241,7 +241,7 @@ void Source::destruct_Source(int nObjects)
 		   delay_=0.;
 		   for (nn=0;nn<ne_oblique;nn++)
 		   {
-			   indexSource= 1;  //  It should be calculated from another function but I put it here =1 for simplification  
+			   indexSource= 1;  //  It should be calculated from another function but I put it here =1 for simplification
 	                        //  as it is not the complete code
 			   ssndc=sValue(nTime,delay_);
 
@@ -261,8 +261,8 @@ void Source::destruct_Source(int nObjects)
                        lu=FSource.lu[nn];
                        lv=FSource.lv[nn];
                        lw=FSource.lw[nn];
- 
-   // 
+
+   //
                        FSource.checkIfPointInObliqueRectangular(xi,yj,zk,x0,y0,z0,lu,lv,lw,isit_in,nn);
 					   if(isit_in == true)
 					   {
@@ -287,7 +287,7 @@ int main()
 	constructSimpleMesh();
 	int n_LumpedLoad=1;
 	FSource.constructObliqueObjects(ne_oblique);
-	
+
 	double x0=5.0, y0=5., z0=5., lu=1.,lv=1.,lw=2.;
 	double a1_axis[3],a2_axis[3],a3_axis[3];
 	a1_axis[0]=0.;a1_axis[1]=0.;a1_axis[2]=1.0;
@@ -299,6 +299,15 @@ int main()
 	FSource.source_range[nn][2][0]=(int)(n1_x/dx[0]);FSource.source_range[nn][2][1]=(int)(n2_x/dx[0]);
 	FSource.source_range[nn][2][2]=(int)(n3_y/dx[0]);FSource.source_range[nn][2][3]=(int)(n4_y/dx[0]);
 	FSource.source_range[nn][2][4]=(int)(n5_z/dx[0]);FSource.source_range[nn][2][5]=(int)(n6_z/dx[0]);
+
+	cout << "dx[0]=" <<dx[0]<<endl;
+	cout << "Xmin= " << FSource.source_range[nn][2][0] <<endl;
+	cout << "Xmax= " << FSource.source_range[nn][2][1] <<endl;
+	cout << "Ymin= " << FSource.source_range[nn][2][2] <<endl;
+	cout << "Ymax= " << FSource.source_range[nn][2][3] <<endl;
+    cout << "Zmin= " << FSource.source_range[nn][2][4] <<endl;
+	cout << "Zmax= " << FSource.source_range[nn][2][5] <<endl;
+	//
 	for (nT=0;nsteps-1;nT++)
 	{
 		FSignal(nT);
