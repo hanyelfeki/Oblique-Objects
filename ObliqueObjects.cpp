@@ -10,7 +10,6 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 	u_axis = new double*[nObjects];v_axis = new double*[nObjects];w_axis = new double*[nObjects];
 	xyz0Corner=new double*[nObjects];xyz7Corner=new double*[nObjects];
 	lu=new double[nObjects]; lv=new double[nObjects];lw=new double[nObjects];
-	source_dir=new int[nObjects];
 
 	for (i=0; i<nObjects; i++)
 	{
@@ -50,7 +49,7 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 
 	for (i=0; i<nObjects; i++)
 	{
-		source_dir[i]=0;lu[i]=0.0;lv[i]=0.0;lw[i]=0.0;
+		lu[i]=0.0;lv[i]=0.0;lw[i]=0.0;
 	}
 
 }
@@ -92,9 +91,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 	}
          xyz0Corner[nn][0]=x0; xyz0Corner[nn][1]=y0; xyz0Corner[nn][2]=z0;
          lu[nn]=luu; lv[nn] = lvv; lw[nn] = lww;
-		 double lall=min(luu,lvv);
-         source_dir[nn] = i_dir;
-		 findCornersObliqueRectangular(nn,x0,y0,z0,luu,lvv,lww,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner);
+ 		 findCornersObliqueRectangular(nn,x0,y0,z0,luu,lvv,lww,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner);
 		 xyzMinMaxRectangular(nn,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner,xmin,xmax,ymin,ymax,zmin,zmax);
 }
     void  ObliqueObjects::findCornersObliqueRectangular(int nn,double x0,double y0,double z0,double lu,double lv,double lw,double xyz1Corner[3],double xyz2Corner[3],double xyz3Corner[3],double xyz4Corner[3],double xyz5Corner[3],double xyz6Corner[3])
@@ -214,59 +211,46 @@ void Source::destruct_Source(int nObjects)
 	}
 
 			//
-	  double sValue(int nTime,double t0)
-	  {
-//      Note that I wrote very simplistic function here just as an example. In the real software there is a source table for different functions
- //     this function defines the functional form of the incident field which is a Gaussian pulse in this simplistic case.
-	    double dt=1.e-9;  // In the original program dt is calculated from the equations of the stability condition.
-		double c=3.e8;
-		double betadt=64.*dt;
-		double t=nTime*dt;
-		double tau=t-t0;
-		return exp(-pow((tau-betadt),2));
- }
 
-	   void FSignal(int nTime)
+	   void testPoints()
 	   {
-		   // This subroutine is used for E-field sources and voltage lumped sources
+		   // This subroutine is used for the field source which can be  E-field sources, H-Field source, voltage lumped source, or Waveguide source
 
-		   int nn,i,j,k,indexSource;
-		   double ssndc,delay_;
+		   int nn,i,j,k;
+
 		   double xi,yj,zk;
 		   double x0,y0,z0,lu,lv,lw;
 		   bool isit_in=false;
 		   // E-field source
 		   //  E-field source along X-direction
-		   ssndc=0.;
-		   delay_=0.;
+
 		   for (nn=0;nn<ne_oblique;nn++)
 		   {
-			   indexSource= 1;  //  It should be calculated from another function but I put it here =1 for simplification
 	                        //  as it is not the complete code
-			   ssndc=sValue(nTime,delay_);
 
-			   for (i=FSource.source_range[nn][2][0];i<FSource.source_range[nn][2][1]+1;i++)
+
+			   for (i=Object1.source_range[nn][2][0];i<Object1.source_range[nn][2][1]+1;i++)
 			   {
-				   for (j=FSource.source_range[nn][2][2];j<FSource.source_range[nn][2][3]+1;j++)
+				   for (j=Object1.source_range[nn][2][2];j<Object1.source_range[nn][2][3]+1;j++)
 				   {
-					   for (k=FSource.source_range[nn][2][4];k<FSource.source_range[nn][2][5]+1;k++)
+					   for (k=Object1.source_range[nn][2][4];k<Object1.source_range[nn][2][5]+1;k++)
 					   {
 						   xi=xMesh[i]+dx[i]/2.;
 						   yj=yMesh[j];
                            zk=zMesh[k];
 					   //
-                       x0=FSource.xyz0Corner[nn][0];
-                       y0=FSource.xyz0Corner[nn][1];
-                       z0=FSource.xyz0Corner[nn][2];
-                       lu=FSource.lu[nn];
-                       lv=FSource.lv[nn];
-                       lw=FSource.lw[nn];
+                       x0=Object1.xyz0Corner[nn][0];
+                       y0=Object1.xyz0Corner[nn][1];
+                       z0=Object1.xyz0Corner[nn][2];
+                       lu=Object1.lu[nn];
+                       lv=Object1.lv[nn];
+                       lw=Object1.lw[nn];
 
    //
-                       FSource.checkIfPointInObliqueRectangular(xi,yj,zk,x0,y0,z0,lu,lv,lw,isit_in,nn);
+                       Object1.checkIfPointInObliqueRectangular(xi,yj,zk,x0,y0,z0,lu,lv,lw,isit_in,nn);
 					   if(isit_in == true)
 					   {
-						   ex[i][j][k] = ex[i][j][k]  - ssndc*FSource.w_axis[nn][0];
+                        cout << "xi= " << xi <<endl;cout << "yj= " << yj <<endl; cout << "zk= " << zk <<endl;
 					   }
 				   }
 			   }
@@ -281,37 +265,38 @@ void Source::destruct_Source(int nObjects)
 int main()
 {
 	// Example
-	int nT,nsteps;
-	nsteps=1000;  // Number of time steps for the time domain calculations. nsteps=1000 just for simplifications but
 	              // it is usually calculated from the duration that the user defines through the UI.
 	constructSimpleMesh();
-	int n_LumpedLoad=1;
-	FSource.constructObliqueObjects(ne_oblique);
-
-	double x0=5.0, y0=5., z0=5., lu=1.,lv=1.,lw=2.;
+	Object1.constructObliqueObjects(ne_oblique);
+	double x0=5.0, y0=5., z0=4., lu=1.,lv=1.,lw=2.;
 	double a1_axis[3],a2_axis[3],a3_axis[3];
 	a1_axis[0]=0.;a1_axis[1]=0.;a1_axis[2]=1.0;
 	a2_axis[0]=1.0;a2_axis[1]=0.0;a2_axis[2]=0.0;
 	a3_axis[0]=0.0;a3_axis[1]=1.0;a3_axis[2]=0.0;
 	int idir=3, nn=0;
 	double n1_x=0.,n2_x=0.,n3_y=0.,n4_y=0.,n5_z=0.,n6_z=0.;
-	FSource.ReadObjectInfoaAndFindMinMax(nn,x0,y0,z0,lu,lv,lw,idir,a1_axis,a2_axis,a3_axis,n1_x,n2_x,n3_y,n4_y,n5_z,n6_z);
-	FSource.source_range[nn][2][0]=(int)(n1_x/dx[0]);FSource.source_range[nn][2][1]=(int)(n2_x/dx[0]);
-	FSource.source_range[nn][2][2]=(int)(n3_y/dx[0]);FSource.source_range[nn][2][3]=(int)(n4_y/dx[0]);
-	FSource.source_range[nn][2][4]=(int)(n5_z/dx[0]);FSource.source_range[nn][2][5]=(int)(n6_z/dx[0]);
+	Object1.ReadObjectInfoaAndFindMinMax(nn,x0,y0,z0,lu,lv,lw,idir,a1_axis,a2_axis,a3_axis,n1_x,n2_x,n3_y,n4_y,n5_z,n6_z);
+	cout<<"n1_x,n2_x,n3_y,n4_y,n5_z,n6_z ="<<endl;
+	cout << "Xmin= " << n1_x <<endl;
+	cout << "Xmax= " << n2_x <<endl;
+	cout << "Ymin= " << n3_y <<endl;
+	cout << "Ymax= " << n4_y <<endl;
+    cout << "Zmin= " << n5_z <<endl;
+	cout << "Zmax= " << n6_z <<endl;
+	Object1.source_range[nn][2][0]=(int)(n1_x/dx[0]);Object1.source_range[nn][2][1]=(int)(n2_x/dx[0]);
+	Object1.source_range[nn][2][2]=(int)(n3_y/dx[0]);Object1.source_range[nn][2][3]=(int)(n4_y/dx[0]);
+	Object1.source_range[nn][2][4]=(int)(n5_z/dx[0]);Object1.source_range[nn][2][5]=(int)(n6_z/dx[0]);
 
 	cout << "dx[0]=" <<dx[0]<<endl;
-	cout << "Xmin= " << FSource.source_range[nn][2][0] <<endl;
-	cout << "Xmax= " << FSource.source_range[nn][2][1] <<endl;
-	cout << "Ymin= " << FSource.source_range[nn][2][2] <<endl;
-	cout << "Ymax= " << FSource.source_range[nn][2][3] <<endl;
-    cout << "Zmin= " << FSource.source_range[nn][2][4] <<endl;
-	cout << "Zmax= " << FSource.source_range[nn][2][5] <<endl;
-	//
-	for (nT=0;nsteps-1;nT++)
-	{
-		FSignal(nT);
-	}
-	FSource.destructObliqueObjects(ne_oblique);
+	cout << "I_Xmin= " << Object1.source_range[nn][2][0] <<endl;
+	cout << "I_Xmax= " << Object1.source_range[nn][2][1] <<endl;
+	cout << "J_Ymin= " << Object1.source_range[nn][2][2] <<endl;
+	cout << "J_Ymax= " << Object1.source_range[nn][2][3] <<endl;
+    cout << "K_Zmin= " << Object1.source_range[nn][2][4] <<endl;
+	cout << "K_Zmax= " << Object1.source_range[nn][2][5] <<endl;
+
+		testPoints();
+
+	Object1.destructObliqueObjects(ne_oblique);
 	return 0;
 }

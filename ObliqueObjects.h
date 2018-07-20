@@ -10,7 +10,7 @@
   double xMesh[100],yMesh[100],zMesh[100],dx[100]; // This is only a virtial mesh. In the original program
                                                   // It is calculated by a mesh generation code
                                                  // Also they should be a dynamic array.
-  double ex[100][100][100];  // In the actual program this is a dynamic array.
+
 
 class ObliqueObjects
 {
@@ -20,7 +20,7 @@ class ObliqueObjects
 public:
 	double** u_axis; double** v_axis; double** w_axis;
 	double** xyz0Corner; double** xyz7Corner; // First corner and last corner
-	int* source_dir;double* lu; double* lv; double* lw;
+	double* lu; double* lv; double* lw;
 	int *** source_range;
 	void constructObliqueObjects(int nObjects);
 	void destructObliqueObjects(int nObjects);
@@ -30,7 +30,7 @@ public:
 	void checkIfPointInObliqueRectangular(double x,double y,double z,double x0,double y0,double z0,double u_length,double v_length,double w_length,bool& isit_in,int nn);
 }
 ;
- ObliqueObjects FSource;
+ ObliqueObjects Object1;
 // Declare Derived Class
 class Source : public ObliqueObjects
 {
