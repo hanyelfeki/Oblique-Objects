@@ -1,10 +1,10 @@
-// Oblique Objects in general. It can used for field sources
+// Identifying Oblique Objects in a Cartesian Mesh
 # include "ObliqueObjects.h"
 #include <math.h>
 
 void ObliqueObjects::constructObliqueObjects(int nObjects)
 {
-// nObjects the total number of the Oblique Objects in the computational domain
+// nObjects: is the total number of the Oblique Objects in the computational domain
 	int i,j,k;
 // Allocate the 2D dynamic arrays
 	u_axis = new double*[nObjects];v_axis = new double*[nObjects];w_axis = new double*[nObjects];
@@ -76,7 +76,7 @@ void ObliqueObjects::destructObliqueObjects(int nObjects)
 		delete[] source_range;
 
 }
-void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double luu,double lvv,double lww,int i_dir,double a1_axis_Esource[3],double a2_axis_Esource[3],double a3_axis_Esource[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
+void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double luu,double lvv,double lww,int i_dir,double MyU_axis[3],double MyV_axis[3],double MyW_axis[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
 {
 	// In this function the solver use the information that were passed from GUI about objects
 	// As a special case we have a source or load can be between 2 points, 2 parallel wires, or 2 parallel plates.
@@ -87,7 +87,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 	double xyz1Corner[3], xyz2Corner[3], xyz3Corner[3], xyz4Corner[3], xyz5Corner[3], xyz6Corner[3];
 	for(i=0;i<3; i++)
 	{
-	u_axis[nn][i]=a1_axis_Esource[i];v_axis[nn][i]=a2_axis_Esource[i];w_axis[nn][i]=a3_axis_Esource[i];
+	u_axis[nn][i]=MyU_axis[i];v_axis[nn][i]=MyV_axis[i];w_axis[nn][i]=MyW_axis[i];
 	}
          xyz0Corner[nn][0]=x0; xyz0Corner[nn][1]=y0; xyz0Corner[nn][2]=z0;
          lu[nn]=luu; lv[nn] = lvv; lw[nn] = lww;
@@ -167,33 +167,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 	  return xmax;
   }
 
-void Source::constructSource(int nObjects)
-{
-	int i; int j;
-	// Allocate index_source
-	index_source=new int*[nObjects+2];
-	for(i=0;i<nObjects+2;i++)
-	{
-		index_source[i]=new int[4];
-	}
-	// Initialize index_source
-	for(i=0;i<nObjects+2;i++)
-	{
-		for(j=0;j<4;j++)   //  j=0,1,2 for x,y,z-directions, j=3 for oblique direction
-		{
-			index_source[i][j]=0;  // this index is used for sources and is not used for loads
-		}
-	}
-}
-void Source::destruct_Source(int nObjects)
-{
-	int i;
-	for(i=0;i<nObjects+2;i++)
-	{
-		delete[]index_source[i];
-	}
-	delete[]index_source;
-}
+
 
 	void constructSimpleMesh()
 	{
