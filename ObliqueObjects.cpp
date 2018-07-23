@@ -6,7 +6,7 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 {
 // nObjects: is the total number of the Oblique Objects in the computational domain
 	int i,j,k;
-// Allocate the 2D dynamic arrays
+// Allocate 2D dynamic arrays
 	u_axis = new double*[nObjects];v_axis = new double*[nObjects];w_axis = new double*[nObjects];
 	xyz0Corner=new double*[nObjects];xyz7Corner=new double*[nObjects];
 	lu=new double[nObjects]; lv=new double[nObjects];lw=new double[nObjects];
@@ -78,8 +78,8 @@ void ObliqueObjects::destructObliqueObjects(int nObjects)
 }
 void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double luu,double lvv,double lww,int i_dir,double MyU_axis[3],double MyV_axis[3],double MyW_axis[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
 {
-	// In this function the solver use the information that were passed from GUI about objects
-	// As a special case we have a source or load can be between 2 points, 2 parallel wires, or 2 parallel plates.
+	// In this function the solver use the information that were passed from GUI about the rectangular oblique objects
+	// As special cases we may the rectangular object a 2D (rectangle) if lu or lv=0 or a 1 1D (straight line) if lu=lv=0.
 	// W-direction is the direction of the source
 	// This function will calaculate finally in the Caretizian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax
 	// to be used in the Cartezian grid for the solver
@@ -179,7 +179,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 		}
 		for(i=0;i<nx;i++)
 		{
-			xMesh[i]=(double)i*dx[i];yMesh[i]=i*dx[i];zMesh[i]=(double)i*dx[i];
+			xMesh[i]=(double)i*dx[i];yMesh[i]=(double)i*dx[i];zMesh[i]=(double)i*dx[i];
 
 		}
 	}
