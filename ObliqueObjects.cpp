@@ -8,13 +8,13 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 	int i,j,k;
 // Allocate 2D dynamic arrays
 	u_axis = new double*[nObjects];v_axis = new double*[nObjects];w_axis = new double*[nObjects];
-	xyz0Corner=new double*[nObjects];xyz7Corner=new double*[nObjects];
+	xyz0Corner=new double*[nObjects];
 	lu=new double[nObjects]; lv=new double[nObjects];lw=new double[nObjects];
 
 	for (i=0; i<nObjects; i++)
 	{
 	u_axis[i]=new double[3];v_axis[i]=new double[3];w_axis[i]=new double[3];
-	xyz0Corner[i]=new double[3];xyz7Corner[i]=new double[3];
+	xyz0Corner[i]=new double[3];
 	}
 // Allocate the 3D dynamic Array "source_range"
 	source_range=new int**[nObjects];
@@ -43,7 +43,7 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 		for (j=0;j<3;j++)
 		{
 		u_axis[i][j]=0.0;v_axis[i][j]=0.0;w_axis[i][j]=0.0;
-		xyz0Corner[i][j]=0.0;xyz7Corner[i][j]=0.0;
+		xyz0Corner[i][j]=0.0;
 		}
 	}
 
@@ -84,17 +84,17 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 	// This function will calaculate finally in the Caretizian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax
 	// to be used in the Cartezian grid for the solver
 	int i;
-	double xyz1Corner[3], xyz2Corner[3], xyz3Corner[3], xyz4Corner[3], xyz5Corner[3], xyz6Corner[3];
+	double xyz1Corner[3], xyz2Corner[3], xyz3Corner[3], xyz4Corner[3], xyz5Corner[3], xyz6Corner[3],xyz7Corner[3];
 	for(i=0;i<3; i++)
 	{
 	u_axis[nn][i]=MyU_axis[i];v_axis[nn][i]=MyV_axis[i];w_axis[nn][i]=MyW_axis[i];
 	}
          xyz0Corner[nn][0]=x0; xyz0Corner[nn][1]=y0; xyz0Corner[nn][2]=z0;
          lu[nn]=luu; lv[nn] = lvv; lw[nn] = lww;
- 		 findCornersObliqueRectangular(nn,x0,y0,z0,luu,lvv,lww,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner);
-		 xyzMinMaxRectangular(nn,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner,xmin,xmax,ymin,ymax,zmin,zmax);
+ 		 findCornersObliqueRectangular(nn,x0,y0,z0,luu,lvv,lww,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner,xyz7Corner);
+		 xyzMinMaxRectangular(nn,xyz1Corner,xyz2Corner,xyz3Corner,xyz4Corner,xyz5Corner,xyz6Corner,xyz7Corner,xmin,xmax,ymin,ymax,zmin,zmax);
 }
-    void  ObliqueObjects::findCornersObliqueRectangular(int nn,double x0,double y0,double z0,double lu,double lv,double lw,double xyz1Corner[3],double xyz2Corner[3],double xyz3Corner[3],double xyz4Corner[3],double xyz5Corner[3],double xyz6Corner[3])
+    void  ObliqueObjects::findCornersObliqueRectangular(int nn,double x0,double y0,double z0,double lu,double lv,double lw,double xyz1Corner[3],double xyz2Corner[3],double xyz3Corner[3],double xyz4Corner[3],double xyz5Corner[3],double xyz6Corner[3],double xyz7Corner[3])
 	{
 // This function finds 7 corners of the rectangular object while the first corner xyz0Corner is already given
     xyz1Corner[0]=x0+lu*u_axis[nn][0];xyz1Corner[1]=y0+lu*u_axis[nn][1];xyz1Corner[2]=z0+lu*u_axis[nn][2];
@@ -106,28 +106,28 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
     xyz5Corner[2]=z0+lv*v_axis[nn][2]+lw*w_axis[nn][2];
     xyz6Corner[0]=x0+lu*u_axis[nn][0]+lw*w_axis[nn][0]; xyz6Corner[1]=y0+lu*u_axis[nn][1]+lw*w_axis[nn][1];
     xyz6Corner[2]=z0+lu*u_axis[nn][2]+lw*w_axis[nn][2];
-    xyz7Corner[nn][0]=x0+lu*u_axis[nn][0]+lv*v_axis[nn][0]+lw*w_axis[nn][0];
-    xyz7Corner[nn][1]=y0+lu*u_axis[nn][1]+lv*v_axis[nn][1]+lw*w_axis[nn][1];
-    xyz7Corner[nn][2]=z0+lu*u_axis[nn][2]+lv*v_axis[nn][2]+lw*w_axis[nn][2];
+    xyz7Corner[0]=x0+lu*u_axis[nn][0]+lv*v_axis[nn][0]+lw*w_axis[nn][0];
+    xyz7Corner[1]=y0+lu*u_axis[nn][1]+lv*v_axis[nn][1]+lw*w_axis[nn][1];
+    xyz7Corner[2]=z0+lu*u_axis[nn][2]+lv*v_axis[nn][2]+lw*w_axis[nn][2];
 	}
-  void ObliqueObjects::xyzMinMaxRectangular(int nn,double xyz1Corner[3],double xyz2Corner[3],double xyz3Corner[3],double xyz4Corner[3],double xyz5Corner[3],double xyz6Corner[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
+  void ObliqueObjects::xyzMinMaxRectangular(int nn,double xyz1Corner[3],double xyz2Corner[3],double xyz3Corner[3],double xyz4Corner[3],double xyz5Corner[3],double xyz6Corner[3],double xyz7Corner[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
     {
 // Find Xmin,Xmax,Ymin,Ymax,Zmin,Zmax of the oblique rectangular object.
 		xmin=0.0e+0;xmax=0.0e+0;ymin=0.0e+0;ymax=0.0e+0;zmin=0.0e+0;zmax=0.0e+0;
 		double uFindMinMax[8];
 		uFindMinMax[0]= xyz0Corner[nn][0]; uFindMinMax[1]=xyz1Corner[0]; uFindMinMax[2]=xyz2Corner[0];
         uFindMinMax[3]=xyz3Corner[0]; uFindMinMax[4]=xyz4Corner[0];
-		uFindMinMax[5]=xyz5Corner[0];uFindMinMax[6]=xyz6Corner[0],uFindMinMax[7]=xyz7Corner[nn][0];
+		uFindMinMax[5]=xyz5Corner[0];uFindMinMax[6]=xyz6Corner[0],uFindMinMax[7]=xyz7Corner[0];
 		xmin=minOfArray(uFindMinMax);
         xmax= maxOfArray(uFindMinMax);
       uFindMinMax[0]= xyz0Corner[nn][1];uFindMinMax[1]=xyz1Corner[1];uFindMinMax[2]=xyz2Corner[1];
 	  uFindMinMax[3]=xyz3Corner[1];uFindMinMax[4]=xyz4Corner[1]; uFindMinMax[5]=xyz5Corner[1];
-	  uFindMinMax[6]=xyz6Corner[1],uFindMinMax[7]=xyz7Corner[nn][1];
+	  uFindMinMax[6]=xyz6Corner[1],uFindMinMax[7]=xyz7Corner[1];
 		ymin=minOfArray(uFindMinMax);
         ymax= maxOfArray(uFindMinMax);
       uFindMinMax[0]= xyz0Corner[nn][2];uFindMinMax[1]=xyz1Corner[2];uFindMinMax[2]=xyz2Corner[2];
 	  uFindMinMax[3]=xyz3Corner[2];uFindMinMax[4]=xyz4Corner[2]; uFindMinMax[5]=xyz5Corner[2];
-	  uFindMinMax[6]=xyz6Corner[2],uFindMinMax[7]=xyz7Corner[nn][2];
+	  uFindMinMax[6]=xyz6Corner[2],uFindMinMax[7]=xyz7Corner[2];
 		zmin=minOfArray(uFindMinMax);
         zmax= maxOfArray(uFindMinMax);
 		return;
