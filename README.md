@@ -9,3 +9,4 @@ The function findCornersObliqueRectangular is used to find 7 corners of the rect
 The function xyzMinMaxRectangular is used to find Xmin,Xmax,Ymin,Ymax,Zmin,Zmax of the oblique rectangular object
 The function checkIfPointInObliqueRectangular is used to to check if the point (x,y,z) is inside the oblique rectangular object or not.
 nObjects: is the total number of the Oblique Objects in the computational domain
+# :EMOJICODE:
