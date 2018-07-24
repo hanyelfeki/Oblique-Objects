@@ -21,7 +21,7 @@ public:
 	double** u_axis; double** v_axis; double** w_axis;
 	double** xyz0Corner; // First corner
 	double* lu; double* lv; double* lw;
-	int *** source_range;
+	int *** Object_range;
 	void constructObliqueObjects(int nObjects);
 	void destructObliqueObjects(int nObjects);
 	void ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double lu,double lv,double lw,int i_dir,double a1_axis[3],double MyV_axis[3],double MyW_axis[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax);

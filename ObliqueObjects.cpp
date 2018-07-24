@@ -16,14 +16,14 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 	u_axis[i]=new double[3];v_axis[i]=new double[3];w_axis[i]=new double[3];
 	xyz0Corner[i]=new double[3];
 	}
-// Allocate the 3D dynamic Array "source_range"
-	source_range=new int**[nObjects];
+// Allocate the 3D dynamic Array "Object_range"
+	Object_range=new int**[nObjects];
 	for (i=0; i<nObjects; i++)
 	{
-		source_range[i]=new int*[3];
+		Object_range[i]=new int*[3];
 		for(j=0;j<3;j++)
 		{
-			source_range[i][j]=new int[6];
+			Object_range[i][j]=new int[6];
 		}
 	}
 // Initialize the arrays
@@ -33,7 +33,7 @@ void ObliqueObjects::constructObliqueObjects(int nObjects)
 		{
 			for(k=0;k<6;k++)
 			{
-			source_range[i][j][k]=0;
+			Object_range[i][j][k]=0;
 			}
 		}
 	}
@@ -69,20 +69,20 @@ void ObliqueObjects::destructObliqueObjects(int nObjects)
 
 		for(j=0;j<3;j++)
 		{
-			delete[] source_range[i][j];
+			delete[] Object_range[i][j];
 		}
-		delete[] source_range[i];
+		delete[] Object_range[i];
 	}
-		delete[] source_range;
+		delete[] Object_range;
 
 }
 void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,double z0,double luu,double lvv,double lww,int i_dir,double MyU_axis[3],double MyV_axis[3],double MyW_axis[3],double& xmin,double& xmax,double& ymin,double& ymax,double& zmin,double& zmax)
 {
-	// In this function the solver use the information that were passed from GUI about the rectangular oblique objects
-	// As special cases we may the rectangular object a 2D (rectangle) if lu or lv=0 or a 1 1D (straight line) if lu=lv=0.
-	// W-direction is the direction of the source
-	// This function will calaculate finally in the Caretizian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax
-	// to be used in the Cartezian grid for the solver
+	// In this function the solver use the information that were passed from GUI about the rectangular oblique objects to find Xmin,Xmax,Ymin,Ymax,Zmin
+	// As special cases the rectangular object may be a 2D (rectangle) if lu or lv=0 or a 1D (straight line) if lu=lv=0.
+	// W-direction is the Longitudinal direction
+	// This function will calculate finally in the Cartesian coordinate Xmin,Xmax,Ymin,Ymax,Zmin,Zmax
+	// to be used in the Cartesian grid for the solver
 	int i;
 	double xyz1Corner[3], xyz2Corner[3], xyz3Corner[3], xyz4Corner[3], xyz5Corner[3], xyz6Corner[3],xyz7Corner[3];
 	for(i=0;i<3; i++)
@@ -188,26 +188,23 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 
 	   void testPoints()
 	   {
-		   // This subroutine is used for the field source which can be  E-field sources, H-Field source, voltage lumped source, or Waveguide source
+		   // This subroutine is used to test points from the mesh
 
 		   int nn,i,j,k;
 
 		   double xi,yj,zk;
 		   double x0,y0,z0,lu,lv,lw;
 		   bool isit_in=false;
-		   // E-field source
-		   //  E-field source along X-direction
 
 		   for (nn=0;nn<ne_oblique;nn++)
 		   {
-	                        //  as it is not the complete code
 
 
-			   for (i=Object1.source_range[nn][2][0];i<Object1.source_range[nn][2][1]+1;i++)
+			   for (i=Object1.Object_range[nn][2][0];i<Object1.Object_range[nn][2][1]+1;i++)
 			   {
-				   for (j=Object1.source_range[nn][2][2];j<Object1.source_range[nn][2][3]+1;j++)
+				   for (j=Object1.Object_range[nn][2][2];j<Object1.Object_range[nn][2][3]+1;j++)
 				   {
-					   for (k=Object1.source_range[nn][2][4];k<Object1.source_range[nn][2][5]+1;k++)
+					   for (k=Object1.Object_range[nn][2][4];k<Object1.Object_range[nn][2][5]+1;k++)
 					   {
 						   xi=xMesh[i]+dx[i]/2.;
 						   yj=yMesh[j];
@@ -230,8 +227,6 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 			   }
 			   }
 
-			   // The above was for updating the ex component only. The original program includes also updating ey, and ez components.
-			   // In this algorithm ex, ey, and ez are not located at the same point in the cell.
 			   }
 
 	   }
@@ -239,7 +234,7 @@ void ObliqueObjects::ReadObjectInfoaAndFindMinMax(int nn,double x0,double y0,dou
 int main()
 {
 	// Example
-	              // it is usually calculated from the duration that the user defines through the UI.
+
 	constructSimpleMesh();
 	Object1.constructObliqueObjects(ne_oblique);
 	double x0=5.0, y0=5., z0=4., lu=1.,lv=1.,lw=2.;
@@ -248,26 +243,26 @@ int main()
 	a2_axis[0]=1.0;a2_axis[1]=0.0;a2_axis[2]=0.0;
 	a3_axis[0]=0.0;a3_axis[1]=1.0;a3_axis[2]=0.0;
 	int idir=3, nn=0;
-	double n1_x=0.,n2_x=0.,n3_y=0.,n4_y=0.,n5_z=0.,n6_z=0.;
-	Object1.ReadObjectInfoaAndFindMinMax(nn,x0,y0,z0,lu,lv,lw,idir,a1_axis,a2_axis,a3_axis,n1_x,n2_x,n3_y,n4_y,n5_z,n6_z);
-	cout<<"n1_x,n2_x,n3_y,n4_y,n5_z,n6_z ="<<endl;
-	cout << "Xmin= " << n1_x <<endl;
-	cout << "Xmax= " << n2_x <<endl;
-	cout << "Ymin= " << n3_y <<endl;
-	cout << "Ymax= " << n4_y <<endl;
-    cout << "Zmin= " << n5_z <<endl;
-	cout << "Zmax= " << n6_z <<endl;
-	Object1.source_range[nn][2][0]=(int)(n1_x/dx[0]);Object1.source_range[nn][2][1]=(int)(n2_x/dx[0]);
-	Object1.source_range[nn][2][2]=(int)(n3_y/dx[0]);Object1.source_range[nn][2][3]=(int)(n4_y/dx[0]);
-	Object1.source_range[nn][2][4]=(int)(n5_z/dx[0]);Object1.source_range[nn][2][5]=(int)(n6_z/dx[0]);
+	double xmin=0.,xmax=0.,ymin=0.,ymax=0.,zmin=0.,zmax=0.;
+	Object1.ReadObjectInfoaAndFindMinMax(nn,x0,y0,z0,lu,lv,lw,idir,a1_axis,a2_axis,a3_axis,xmin,xmax,ymin,ymax,zmin,zmax);
+	cout<<"xmin,xmax,ymin,ymax,zmin,zmax ="<<endl;
+	cout << "Xmin= " << xmin <<endl;
+	cout << "Xmax= " << xmax <<endl;
+	cout << "Ymin= " << ymin <<endl;
+	cout << "Ymax= " << ymax <<endl;
+    cout << "Zmin= " << zmin <<endl;
+	cout << "Zmax= " << zmax <<endl;
+	Object1.Object_range[nn][2][0]=(int)(xmin/dx[0]);Object1.Object_range[nn][2][1]=(int)(xmax/dx[0]);
+	Object1.Object_range[nn][2][2]=(int)(ymin/dx[0]);Object1.Object_range[nn][2][3]=(int)(ymax/dx[0]);
+	Object1.Object_range[nn][2][4]=(int)(zmin/dx[0]);Object1.Object_range[nn][2][5]=(int)(zmax/dx[0]);
 
 	cout << "dx[0]=" <<dx[0]<<endl;
-	cout << "I_Xmin= " << Object1.source_range[nn][2][0] <<endl;
-	cout << "I_Xmax= " << Object1.source_range[nn][2][1] <<endl;
-	cout << "J_Ymin= " << Object1.source_range[nn][2][2] <<endl;
-	cout << "J_Ymax= " << Object1.source_range[nn][2][3] <<endl;
-    cout << "K_Zmin= " << Object1.source_range[nn][2][4] <<endl;
-	cout << "K_Zmax= " << Object1.source_range[nn][2][5] <<endl;
+	cout << "I_Xmin= " << Object1.Object_range[nn][2][0] <<endl;
+	cout << "I_Xmax= " << Object1.Object_range[nn][2][1] <<endl;
+	cout << "J_Ymin= " << Object1.Object_range[nn][2][2] <<endl;
+	cout << "J_Ymax= " << Object1.Object_range[nn][2][3] <<endl;
+    cout << "K_Zmin= " << Object1.Object_range[nn][2][4] <<endl;
+	cout << "K_Zmax= " << Object1.Object_range[nn][2][5] <<endl;
 
 		testPoints();
 
