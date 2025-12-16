@@ -9,5 +9,6 @@ This function will calculate finally in the Cartesian coordinate Xmin,Xmax,Ymin,
 The function findCornersObliqueRectangular finds 7 corners of the rectangular object while the first corner xyz0Corner is already given
 The function xyzMinMaxRectangular finds Xmin,Xmax,Ymin,Ymax,Zmin,Zmax of the oblique rectangular object
 The function checkIfPointInObliqueRectangular checks if the point (x,y,z) is inside the oblique rectangular object or not.
-nObjects is the total number of the Oblique Objects in the computational domain
+nObjects is the total number of the Oblique Objects in the computational domain. 
+We modernized the code using vectors instead of using pointers.
 
